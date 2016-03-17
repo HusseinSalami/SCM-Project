@@ -1,0 +1,87 @@
+.container {
+    background-color: rgb(255,255,255);
+	border: 1px solid rgba(0,0,0,.15);
+	border-radius: 4px;
+	box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 0 4px rgba(0,0,0,0.2);
+	margin: 40px auto; /*aligns center*/
+	padding: 24px;
+	
+
+}
+
+[class='btn'] {
+	border: none;
+	border-bottom: 2px solid rgba(0,0,0,.15);
+	border-top: 1px solid rgba(255,255,255,.15);
+	border-radius: 3px;
+	color: #fff;
+	display: inline-block;
+	float: left;
+	font: -webkit-small-control;
+	font-size: .7em;
+	letter-spacing: 1px;
+	line-height: 140%;
+	padding: 10px 20px;
+	text-decoration: none;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+	text-transform: uppercase;
+	
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	-o-transition: all 0.1s linear;
+	  transition: all 0.1s linear;
+}
+
+	.btn {
+		background-color: rgb(255,255,255);
+		border-radius: 0;
+		border: 1px solid rgb( 186, 186, 186 );
+		color: rgb( 186, 186, 186 );
+		text-shadow: 0 1px 1px rgba(255, 255, 255, 1);
+	}
+	
+		.btn:hover {
+			background-color: #4195fc;
+			border: 1px solid rgba(0,0,0,.1);
+			color: rgb(255,255,255);
+			cursor: pointer;
+			text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+		}
+		
+		.btn:active {
+			box-shadow: 0 1px 1px rgba(0,0,0,0.15) inset;
+			text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
+		}
+	
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: none;
+    background-color: #ffffff;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: #666;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover:not(.active) {
+    background-color: #4195fc;
+}
+
+li a.active {
+    color: white;
+    background-color: #4195fc;
+}
+© 2016 Microsoft Conditions Confidentialité et cookies Développeurs Français
+    

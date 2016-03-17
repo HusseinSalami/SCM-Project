@@ -1,0 +1,414 @@
+
+
+@(list_version:List[Version],list_cL:List[List[ChangeList]],nameTestDef :String)
+
+    
+@main("Welcome to Play") {
+<link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")">
+<script>
+    function index10(args)
+    {
+        $('#reference').html('');
+        $('#comp').html('');
+        $('#reference').append($("<option disabled selected>Select a ChangeList</option>"));
+        $('#comp').append($("<option disabled selected>Select a ChangeList</option>"));
+        
+         $.get("/changeListVersionTestDef/@{nameTestDef}/"+args , function(data){
+         $.each(data, function(index, changeL){
+           $("#reference").append($("<option>").text(changeL.id));
+           $("#comp").append($("<option>").text(changeL.id));
+         });
+         });
+    }
+    function listSelected(){
+  
+      $('#metricDefComparer').html('');
+      $("#metricDefComparer").append($('<option value="vide" disabled selected>choose one</option>'));
+        
+      var e = document.getElementById("version_List");
+      
+        var value=e.options[e.selectedIndex].value;
+    
+        $.get("/versionIsValidate/@{nameTestDef}/"+value,function(data)
+        {
+           if(data =="true")
+             { 
+                 $('.valider').attr('disabled', false);
+             }
+           else
+             {
+               $('.valider').attr('disabled',true);
+             }
+        });
+        
+        $.get("/metricDefNom/@{nameTestDef}",function(listMetricDef){
+            
+            $("#metricDefComparer").append($("<option value='all'>All</option>"));
+                
+            $.each(listMetricDef,function(index1,metricDef){
+                
+                $("#metricDefComparer").append($("<option value='"+metricDef.idMetricDef+"'>"+metricDef.name+"</option>"));
+                
+            });
+            
+            
+            
+        });
+ //       ("#reference").html(' ');
+ //     ("#comp").html(' ');
+        index10(value);
+}
+
+function divMetCmpAppear()
+{
+    document.getElementById('cmpRes').style.display = 'block';
+}
+
+function validateVersion()
+{
+    var table= document.getElementById("validation");
+                while(table.rows.length > 0) {
+                                        table.deleteRow(0);
+                                              }
+        
+        var e = document.getElementById("version_List");
+        var value=e.options[e.selectedIndex].value;
+   
+   $("#validation").append($("<tr id='header'></tr>"));
+        
+       $.get("/validateVersion/@{nameTestDef}/"+value,function(data){
+            $.get("/couleurMetriqueValidate/@{nameTestDef}/"+value,function(couleurList){
+            
+            $.get("/metricDefNom/@{nameTestDef}",function(data_metricDef)
+            {    
+                 $("#header").append($("<th align='left'>changeList</th>"));
+                 $.each(data_metricDef, function(index1, metricDef){
+                    $("#header").append($("<th align='left'>"+metricDef.name +"</th>"));
+                 });
+            });
+         
+            $.get("/metricValueTemplate/@{nameTestDef}/"+value,function(listValeurMetrique)
+            
+            { 
+                $.get("/headBaseId/"+value,function(basehead){
+                $.each(basehead,function(index2,id){
+                $.each(listValeurMetrique, function(index3, metricDeflist){
+                        if(index2==index3)
+                {
+                    if(index2==0)
+                    {
+                    $("#validation").append($("<tr id='liste"+index3+"'><td>"+id+"</td></tr>"));
+                    }
+                    if(index2==1)
+                    {
+                        
+                        if(data=="retrait")
+                        {
+                            $("#validation").append($("<tr id='liste"+index3+"'><td  bgcolor='#FF0000'>"+id+"</td></tr>"));
+                        }
+                        if(data=="avance")
+                        {
+                            $("#validation").append($("<tr id='liste"+index3+"'><td  bgcolor='#00FF00'>"+id+"</td></tr>"));
+                        }
+                        if(data=="neutre")
+                        {
+                            $("#validation").append($("<tr id='liste"+index3+"'><td  bgcolor='#909090'>"+id+"</td></tr>"));
+                        }
+                    
+                        
+                    }
+                        $.each(metricDeflist, function(index4, metricVal){
+                            if(index2==0){
+                         $("#liste"+index3).append($("<td>"+metricVal.value+"</td>"));
+                            }
+                            if(index2==1)
+                            {
+                                $.each(couleurList,function(index7,couleur){
+                                   
+                                   if(index7==index4)
+                                   {
+                                       if(couleur=="retrait")
+                                       {
+                                           $("#liste"+index3).append($("<td bgcolor='#FF0000'>"+metricVal.value+"</td>"));
+                                       }
+                                       if(couleur=="avance")
+                                       {
+                                           $("#liste"+index3).append($("<td bgcolor='#00FF00'>"+metricVal.value+"</td>"));
+                                       }
+                                       if(couleur=="neutre")
+                                       {
+                                           $("#liste"+index3).append($("<td bgcolor='#909090'>"+metricVal.value+"</td>"));
+                                       }
+                                   
+                                       
+                                   }
+                                });
+                            }
+                                
+                                                                        });
+                
+                }
+                
+                });
+                                                    });
+                                                              });
+            });
+        });
+        });
+    
+}
+
+</script>
+<div class="container">
+<ul>
+    <li>
+    <form method="GET" id="index" action='/index'>
+    <button class="btn" >Back</button>
+    </form>
+    </li>
+    <li style="float:right !important">
+    <form method="GET" id="logout" action='/logout'>
+    <button class="btn">LogOut</button>
+    </form>
+    </li>
+</ul>
+<br><br>
+<table style="border-spacing: 10px; width:100%" >
+    <tr>
+        <td style="width:33%" ><h1>Version</h1></td>
+        <td style="width:33%" ><h1>Metrics</h1></td>
+        <td style="width:33%" ><h1>Results</h1></td>
+    </tr>
+    <tr >
+<td >
+    <select id="version_List" onchange='listSelected()'>
+<option value="vide" disabled selected >choose one</option>
+@list_version.map{version_element=>
+<option value='@version_element.id'  id='@version_element.name' >@version_element.name  </option>
+}
+</select>
+
+<button id="validate" class="valider" onclick="validateVersion()">validate Version</button>
+    
+</td>        
+<td >
+<select id="metricDefComparer" onchange="divMetCmpAppear()">
+<option value="chooseMetrics" disabled selected>choose metric</option>
+</select>    
+    
+</td>        
+    </tr>
+<tr>
+<td>
+    <table id="validation" style="width:100%"></table>
+
+<br/>
+</td>    
+<td>
+    <div id="cmpRes" style="display:none">
+
+ <label style="float:left;width:180px">ChangeList Reference</label>
+ <select id = 'reference' >choose reference changeList
+                        <option disabled selected>Select a ChangeList</option>
+                    </select>
+<br/>
+ <label style="float:left;width:180px">ChangeList to compare</label> <select id = 'comp'>choose changeList to compare
+                        <option disabled selected>Select a ChangeList</option>
+                    </select>
+<br>
+<br>
+<button onclick='compare()' class="btn"> Comparer </button>
+</div>
+    
+</td>
+<td>
+<table id="comparerChangeList" style="width:100%"></table>
+
+</td>
+</tr></table>
+
+
+<script>
+    function compare(){
+     var table= document.getElementById("comparerChangeList");
+     while(table.rows.length > 0) {
+                                        table.deleteRow(0);
+                                  }
+ //    $("#reference").html('');
+ //    $("#comp").html('');
+    
+    var ref = document.getElementById("reference");
+    var reference=ref.options[ref.selectedIndex].text;
+    
+    var co = document.getElementById("comp");
+    var comp=co.options[co.selectedIndex].text;
+    
+    var e = document.getElementById("version_List");
+    var value=e.options[e.selectedIndex].text;
+    
+    var metrics=document.getElementById("metricDefComparer");
+    var metricsTest=metrics.options[metrics.selectedIndex].text;
+    var compareChoix=metrics.options[metrics.selectedIndex].value;
+    
+    $("#comparerChangeList").append($("<tr id='headerCompare'></tr>"));
+         
+    if(compareChoix=="all"){
+        $.get("/comparerChangeList/@nameTestDef/"+reference+"/"+comp, function(data){
+             $.get("/couleurMetriqueComparer/@{nameTestDef}/"+reference+"/"+comp, function(couleurList){
+                 
+                     $.get("/metricDefNom/@{nameTestDef}",function(data_metricDef) {    
+                 $("#headerCompare").append($("<th align='left'>changeList</th>"));
+                 $.each(data_metricDef, function(index1, metricDef){
+                    $("#headerCompare").append($("<th align='left'>"+metricDef.name +"</th>"));
+                 });
+                        });
+
+           //
+            $.get("/metricValueCompareTemplate/@{nameTestDef}/"+reference+"/"+comp,function(listValeurMetrique){ 
+                
+                $.each(listValeurMetrique, function(index3, metricDeflist){
+                    if(index3==0)                
+                    {
+                        $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td>"+reference+"</td></tr>"));
+                      
+                    }
+                    if(index3==1)
+                    {
+                        if(data=="retrait")
+                        {
+                            $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td  bgcolor='#FF0000'>"+comp+"</td></tr>"));
+                        }
+                        
+                        if(data=="avance")
+                        {
+                            $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td bgcolor='#00FF00'>"+comp+"</td></tr>"));
+                        }
+                        
+                        if(data=="neutre")
+                        {
+                            $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td bgcolor='#909090'>"+comp+"</td></tr>"));
+                        }
+                    }
+                    
+                        $.each(metricDeflist, function(index4, metricVal){
+                            $.each(couleurList, function(index5, couleur){
+                            if(index3==0){
+                                if(index5==index4){
+                         $("#listeComparer"+index3).append($("<td>"+metricVal.value+"</td>"));
+                            }
+                                } 
+                            
+                            if(index3==1)
+                            {
+                                if(index5==index4)
+                                {
+                                    if(couleur=="neutre")
+                                    {
+                                        $("#listeComparer"+index3).append($("<td bgcolor='#909090'>"+metricVal.value+"</td>"));
+                         
+                                    }
+                                    if(couleur=="avance")
+                                    {
+                                     $("#listeComparer"+index3).append($("<td bgcolor='#00FF00'>"+metricVal.value+"</td>"));
+                            
+                                    }
+                                    if(couleur=="retrait")
+                                    {
+                                     $("#listeComparer"+index3).append($("<td bgcolor='#FF0000'>"+metricVal.value+"</td>"));
+                               
+                                    }
+                                    
+                                }
+                                    
+                                }
+                            });
+                            });
+                            });
+                               
+                                    
+                });
+                    });
+         
+         });
+    }
+    else
+    {
+        if(compareChoix!="chooseMetrics")
+        {
+            
+            
+                 $("#headerCompare").append($("<th align='left'>changeList</th>"));
+                 
+                $("#headerCompare").append($("<th align='left'>"+metricsTest+"</th>"));
+                 
+            
+            $.get("/comparerChangeListUniqueMetrique/"+compareChoix+"/"+reference+"/"+comp, function(data){
+            
+             
+            
+           //
+            $.get("/metricValueUniqueCompareTemplate/"+compareChoix+"/"+reference+"/"+comp,function(listValeurMetrique){ 
+                
+                $.each(listValeurMetrique, function(index3, metricDeflist){
+                    if(index3==0)                
+                    {
+                        $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td>"+reference+"</td><td id='cL"+reference+" '>"+metricDeflist.value+"</td></tr>"));
+                    }
+                    if(index3==1)
+                    {
+                         if(data=="retrait")
+                        {
+                            $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td bgcolor='#FF0000'>"+comp+"</td><td id='cL"+comp+"'>"+metricDeflist.value+"</td></tr>"));
+                        }
+                        
+                        if(data=="avance")
+                        {
+                            $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td bgcolor='#00FF00'>"+comp+"</td><td id='cL"+comp+"'>"+metricDeflist.value+"</td></tr>"));
+                        }
+                        
+                        if(data=="neutre")
+                        {
+                            $("#comparerChangeList").append($("<tr id='listeComparer"+index3+"'><td bgcolor='#909090'>"+comp+"</td><td id='cL"+comp+"'>"+metricDeflist.value+"</td></tr>"));
+                        }
+                        
+                    }
+                    
+                        
+                                    if(data=="retrait" && index3==1){
+                                    $("#listeComparer"+index3).append($("<td id='resultatComparer"+comp+"'></td>"));
+                                                        }
+                                    if(data=="retrait" && index3==0){
+                                    
+                                    $("#listeComparer"+index3).append($("<td id='resultatComparer"+reference+"'></td>"));
+                                    
+                                                        }
+                                                                                                
+                                    if(data=="avance" && index3==1){
+                                    $("#listeComparer"+index3).append($("<td id='resultatComparer"+comp+"'></td>"));
+                                                      }
+                                                      
+                                    if(data=="avance" && index3==0){
+                                    $("#listeComparer"+index3).append($("<td id='resultatComparer"+reference+"'></td>"));
+                                                      }
+                                                      
+                                    if(data=="neutre" && index3==1){
+                                    $("#listeComparer"+index3).append($("<td id='resultatComparer"+comp+"'></td>"));
+                                                      }
+                                                      
+                                    if(data=="neutre" && index3==0){
+                                    $("#listeComparer"+index3).append($("<td id='resultatComparer"+reference+"'></td>"));
+                                                      }                  
+                                    
+                    });
+            });
+        });
+            
+        }  
+    }
+}
+</script>
+
+
+</div>
+
+}

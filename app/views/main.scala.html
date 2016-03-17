@@ -1,0 +1,388 @@
+@(title: String)(content: Html)
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" type="text/css"  href='@routes.Assets.at("css/style.css")'>
+        
+        <script src="@routes.Assets.at("javascripts/jquery-1.11.3.min.js")" type="text/javascript"></script>
+        <script>
+        
+        
+            function draw(){
+            var c = document.getElementById("myCanvas");
+            var color = ['black','blue','green',"red",'brown',"orange","purple"];
+            var ctx = c.getContext("2d");
+            var decalage = 40;
+            var pasAbs = 30;
+            var pasOrd = 40;
+                $.get("/versions", function(data){
+                    var marqueur1 = 1;
+                    $.each(data, function(indexV, version){
+                        var versionBaseId = version.baseId;
+                        $.get("/changeLists", function(data1){
+                            var posBase = 6;
+                            var cmp = 0;
+                            var versionDeLaBase = "";
+                            var BaseDeLaBase ="";
+                            var changeL34 ="";
+                            var currentBase ="";
+                            var marqueur = 0;
+                            var marqueur3 = 0;
+                            var base = "";
+                            var maBase ="";
+                            
+                            
+                            $.each(data1,function(indexC2,changeL2){
+                                //trouver la version de la base de la version courante
+                                //var versionDeLaBase = "";
+                                //var absBase = 0;
+                                
+                                    $.each(data1,function(indexC3,changeL3){
+                                        if(changeL3.id == version.baseId){
+                                            versionDeLaBase = changeL3.versionId;
+                                            //changeL33 = changeL3.versionId;
+                                            changeL34 = changeL3.id;
+                                            base = changeL34;
+                                        }
+                                    });
+                                    
+                                    currentBase = versionDeLaBase;
+                                    
+                                    if(currentBase == "1" && marqueur3 == 0 && version.id != "1"){
+                                        marqueur3 =1;
+                                        $.each(data1,function(indexC9,changeL9){
+                                        //     $.each(data, function(indexV3, versions3){
+                                        //       if(versionDeLaBase == versions3.id){
+                                        //           BaseDeLaBase = versions3.baseId;
+                                        //       }
+                                        //   });
+
+                                          if(changeL9.versionId == currentBase && ((parseInt(changeL9.id)) < (parseInt(changeL34))) ){
+                                          posBase = posBase + 1 ;
+                                          }
+                                          
+                                        });
+                                    }
+                                    
+                                    
+                                    if(currentBase != "1" && marqueur == 0){
+                                        //posBase ++;
+                                        //marqueur1 = marqueur1 + 1;
+                                    }
+                                    if(marqueur == 0)
+                                    {
+                                    var marqueur4 = 0 ;
+                                    marqueur = 1;
+                                    MaBase = currentBase;
+                                    while(currentBase != "1"){
+                                        //if (currentBase == "2"){
+                                        
+                                        //}
+                                        //maBase = version.baseId;
+                                        var marqueur5 = 0;
+                                        $.each(data1,function(indexC4,changeL4){
+                                            $.each(data, function(indexV1, versions1){
+                                              if(currentBase == versions1.id){
+                                                  BaseDeLaBase = versions1.baseId;
+                                              }
+                                              
+                                              if(base == versions1.id && marqueur4 == 1 && marqueur5 == 0){
+                                                  base = versions1.baseId;
+                                                  marqueur5 = 1;
+                                              }
+                                             
+                                          });
+                                          
+                                          
+
+                                          if(changeL4.versionId == currentBase && ((parseInt(changeL4.id)) <= (parseInt(base))) ){
+                                          posBase = posBase + 1 ;
+                                          
+                                          
+                                          }
+                                          
+                                          
+                                        });
+                                        marqueur4 = 1;
+                                        $.each(data1,function(indexC5,changeL5){
+                                              if(changeL5.id == BaseDeLaBase){
+                                                  base = currentBase;
+                                                  currentBase = changeL5.versionId;
+                                              }
+                                          });
+                                    }
+                                    
+                                    //if(currentBase == "1" && marqueur3 == 0 && version.id != "1"){
+                                        //marqueur3 =1;
+                                        $.each(data1,function(indexC9,changeL9){
+                                        //     $.each(data, function(indexV3, versions3){
+                                        //       if(versionDeLaBase == versions3.id){
+                                        //           BaseDeLaBase = versions3.baseId;
+                                        //       }
+                                        //   });
+
+                                          if(changeL9.versionId == currentBase && ((parseInt(changeL9.id)) < (parseInt(BaseDeLaBase))) ){
+                                          posBase = posBase + 1 ;
+                                          }
+                                          
+                                        });
+                                    //}
+                            }
+                                    
+                                 if(changeL2.versionId == "2" && ((parseInt(changeL2.id)) <= (parseInt(BaseDeLaBase))) ){
+                                     posBase = posBase + 1;
+                                     var a ="";
+                                 }
+                                 
+                             });
+                            
+                             //var absBase = 
+                             ctx.beginPath();
+                             ctx.moveTo((cmp + posBase) * pasAbs, (parseInt(versionDeLaBase) - 1) * pasOrd + decalage + 5);
+                             ctx.lineTo((cmp + posBase) * pasAbs, (indexV) * pasOrd + decalage);
+                             ctx.strokeStyle = color[indexV % color.length];
+                             ctx.stroke();
+                             
+                             //ctx.beginPath();
+                             
+                             ctx.fillStyle = color[(indexV)% color.length];
+                             ctx.fillText(version.name, 20, (indexV) * pasOrd + decalage + 4);
+                            // ctx.stroke();
+                            //var cmp = 0;
+                            //var posBase = 0;
+                            $.each(data1,function(indexC,changeL){
+                                if(changeL.versionId == version.id){
+                                    if(changeL.id == "1"){
+                                    ctx.beginPath();
+                                    ctx.arc((cmp + posBase) * pasAbs, decalage, 5, 0, 2 * 3.14, false);
+                                    ctx.fillStyle = color[indexV  % color.length];
+                                    ctx.fill();
+                                    ctx.fillText(changeL.id, (cmp + posBase) * pasAbs - 15, decalage - 7);
+                                    ctx.stroke();  
+                                    //cmp ++;
+                                    }
+ 
+                                    else{
+                                    ctx.beginPath();
+                                    ctx.moveTo((cmp + posBase) * pasAbs - 1, indexV * pasOrd + decalage);
+                                    ctx.lineTo((cmp  + posBase) * pasAbs, (indexV) * pasOrd + decalage);
+                                    ctx.arc((cmp + 1 + posBase) * pasAbs, (indexV) * pasOrd + decalage, 5, 0, 2 * 3.14, false);
+                                    ctx.lineWidth = 5;
+                                    ctx.fillStyle = color[indexV % color.length];
+                                    ctx.fill();
+                                    ctx.lineWidth = 2;
+                                    ctx.strokeStyle = color[indexV % color.length];
+                                    ctx.fillText(changeL.id, (cmp + posBase + 1) * pasAbs - 15, (indexV) * pasOrd + decalage - 7);
+                                    ctx.stroke();  
+                                    cmp ++;
+                                    }
+                                }
+                            });
+                        });
+                    });
+                });
+                drawButton();
+}
+
+
+        
+        function drawButton(){
+            var decalageOrd = 33;
+            var decalageAbs = 130;
+            var pasOrd = 40;
+            
+            var str = "<input type='text' name='description ' onclick='myFunction()'/>";
+            str +="<button>Add ChangeList</button>";
+            str += "</form> <br> <br>";
+            
+            var str1 = "<ul class='list-unstyled'>";
+    str1+="<li><a data-placement='bottom' data-toggle='popover' data-title='Login' data-container='body' type='button' data-html='true' href='#' id='login'>+</a></li>";
+    str1+="<div id='popover-content' class='hide'>";
+      str1+="<form class='form-inline' role='form'>";
+        str1+="<div class='form-group'>";
+          str1+="<select class='form-control'>";
+            str1+="<option>NA</option>";
+           str1+=" <option>RU</option>";
+            str1+="<option>EU</option>";
+            str1+="<option>SEA</option>";
+         str1+=" </select> ";
+         str1+=" <input type='text' placeholder='Name' class='form-control' maxlength='5'>";
+         str1+=" <button type='submit' class='btn btn-primary'>Go To Login »</button>";                                  
+        str1+="</div>";
+      str1+="</form>";
+   str1+=" </div>";
+  str1+="</ul>";
+
+
+            $.get("/versions", function(data){
+                    $.each(data, function(indexV, version){
+                        $("#CanvasContainer").append("<input type='button' id='container"+ (indexV + 1) +"' value='+' style='z-index:2; position:absolute; top:" + (decalageOrd + indexV * pasOrd) + "px; left:"+ decalageAbs +"px; ' value='+' onclick = 'addChangeListfunc("+ version.id +")' > ");
+                       // $("#versions").append("<form method='POST' action='/changeList2/"+ version.id + "'style='float:left;'>" + str);
+                    });
+            });
+            
+
+            
+            
+            
+            
+            
+            // $ ->
+            //     $.get "/versions", (versions) ->
+            //          $.each versions, (index, version) ->
+            //              $("#versions").append $("<li id= '" + version.id + "'>").text version.name
+            //                 $("#versions").append $("<br><ul id='version" + version.id + "'>")
+            //             $("#versions").append $("<form method='POST' action='/changeList2/"+ version.id + "'style='float:left;'>" + str)
+            //             $("#1er").append $("<li id='" +version.headId+"'>").text (" base id: "+version.baseId+" head id:"+version.headId+"/n")
+        
+            
+        }
+        
+        function post(path, parameter1,parameter2) {
+             var form = $('<form method="post"  action="'+path+parameter1+'/'+parameter2+'"></form>');
+             $(document.body).append(form);
+             form.submit();
+        }
+        
+        function hideDialog(){
+            $("#dialogUi").css("display","none");
+        }
+        
+        //<h1 id='titre'>Add Changelist</h1> <p>Please Add ChangeList</p> <input type ='text' id='contenu'> <br/> <button type='button' id='close'  onclick='hideDialog()'>x</button> <input id='aDialog' type = 'button' value='Confirm' onclick = 'post(/changeList2/,";
+        function addChangeListfunc(versionId){
+
+        $("#dialogUi").css("display","block");
+        var str5 = "<div id='entete'> <button type='button' id='close'  onclick='hideDialog()'>x</button> <h1 id='titre'>Add ChangeList</h1></div> <div id='contenuDialog'><p id='pDialog'>Enter description of the ChangeList</p><br><br> <input type ='text' id='contenu'> <input id='aDialog' type = 'button' value='Confirm' onclick = 'post5(";       
+        //var versionPrompt = prompt("Please enter changelist description", "changelist description");
+        
+        //$("#dialogUi").append( str5 + versionId + "," + $("#contenu").val() +")'> ");
+        $("#dialogUi").append(str5 + versionId +")'> </div>");
+        
+       // post("/changeList2/",versionId,versionPrompt);
+     
+        }
+        function post5(versionId){
+            post("/changeList2/",versionId,$("#contenu").val() )
+        }
+        
+        </script>
+        
+        <style>
+            #dialogUi{
+	position:absolute;
+	display:none;
+	background-color:#e6e6e6;
+	width:30%;
+	left:25%;
+	height: 22%;
+	top:35%;
+	border-radius:10px;
+	overflow:hidden;
+	border: 2px solid #4D94FF;
+	box-shadow: 10px 10px 5px #888888;
+	font-size:75%;
+}
+#runTest{
+    position:absolute;
+	display:none;
+	background-color:#e6e6e6;
+	width:30%;
+	left:25%;
+	height: 30%;
+	top: 94%;
+    left: 68%;
+	border-radius:10px;
+	overflow:hidden;
+	border: 2px solid #4D94FF;
+	box-shadow: 10px 10px 5px #888888;
+	font-size:75%;
+}
+
+
+#entete{
+	position:relative;
+	top:0;
+	left:0;
+	width:100%;
+	height:30%;
+	background-color:#d9d9d9;
+	color:#4D94FF;
+	
+}
+
+#close{
+	position:relative;
+	top:9px;
+	right:1%;
+	height:30px;
+	width:30px;
+	text-align:center;
+	font-size:150%;
+	color:#4D94FF;
+	float:right;
+	border-radius:20px;
+	background-color:#f2f2f2;
+	z-index:5;
+}
+
+
+
+#titre{
+	position:relative;
+	top:0;
+	height:100%;
+	width:100%;
+	margin:0;
+	text-align:center;
+	padding-top:2%;
+}
+
+#contenuDialog, .radio {
+	position:relative;
+	font-size:150%;
+	left: 20px;
+	top:10px;
+	width:100%;
+	height:80%;
+}
+
+#pDialog{
+	position:relative;
+	margin:0;
+	top:10%;
+	
+}
+
+#aDialog{
+	position:relative;
+	margin:0;
+	top:70%;
+	font-size:130%;
+	text-decoration:none;
+	color:#4D94FF;
+}
+
+#aDialog1{
+	position:relative;
+	margin:0;
+	left:270px;
+	top: -61px;
+	font-size:130%;
+	text-decoration:none;
+	color:#4D94FF;
+}
+
+        </style>
+    </head>
+    
+    <body onload="draw()">
+        
+
+
+
+@content
+
+    </body>
+</html>

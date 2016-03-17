@@ -1,0 +1,351 @@
+@()
+
+@main("Welcome to Play") {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")">
+
+    <p>@session.get("username")</p>
+
+    <script type='text/javascript' src='@routes.Assets.at("javascripts/index4.js")'></script>
+    <script>
+        $.get("/versions",function(list_Version)
+        {
+          if(list_Version==null){
+              $("#select_Version").append($("<option value='rien'>not found </option>"));
+              
+          }
+          
+         else{
+                $("#select_Version").append($("<option value='all'>all</option>"));
+             
+               $.each(list_Version, function(index, version){
+         
+           $("#select_Version").append($("<option value='" + version.id + "'>" + version.name + " </option>"));
+                
+               });
+         }
+            
+        });
+    </script>
+    
+    <script>
+    var init = 0;
+    var init1=0;
+    function listSelected(){
+        if (init==0){
+            document.getElementById('select_list').remove(0);
+            init = 1;
+        }
+        var value = $('#select_list :selected').text();
+        //document.getElementById("hussein").innerHTML = value;
+             $("#compare_list").attr("action", "/compareChangeListPage/"+value);
+
+    }
+    
+    function versionSelected()
+    {
+        // if(init==0)
+        // {
+        //     document.getElementById('select_Version').remove(0);
+        //     init1=1;
+        // }
+        var value1 = $('#select_Version :selected').text();
+        window.appeler()
+    }
+    
+    function ImpPerTabClick(){ 
+           document.getElementById('impDiv').style.display = 'block';
+        document.getElementById('compareDiv').style.display = 'none';
+         document.getElementById('impTab').className='active';
+        document.getElementById('cmpPerTab').className='';
+    }
+    function cmpPerTabClick()
+     {  document.getElementById('compareDiv').style.display = 'block';
+        document.getElementById('impDiv').style.display = 'none';
+        document.getElementById('impTab').className='';
+        document.getElementById('cmpPerTab').className='active';
+     }
+    
+</script>
+<div class="container">
+<ul class="nav nav-list">
+    <li><a class="active" href="#" id="impTab" onclick="ImpPerTabClick()">Implementation</a></li>
+    <li><a href="#" id="cmpPerTab" onclick="cmpPerTabClick()">Compare Performance</a></li>
+    <li style="float:right !important">
+    <form method="GET" id="logout" action='/logout'>
+    <button class="btn">LogOut</button>
+    </form>
+    </li>
+</ul>
+
+<br/>
+<br/>
+<div id="impDiv">
+<div id="CanvasContainer" style="position:relative;">
+<canvas id="myCanvas" width="900" height="450" style="border:1px solid #d3d3d3;"></canvas>
+</div>    
+    <script>
+
+    function post(path, parameter1,parameter2) {
+    var form = $('<form method="post"  action="'+path+parameter1+'/'+parameter2+'"></form>');
+    $(document.body).append(form);
+    form.submit();
+    
+ }
+ 
+   function get(path, parameters) {
+    var form = $('<form method="get"  action="'+path+parameters+'"></form>');
+    $(document.body).append(form);
+    form.submit();
+ }
+ </script>
+ <script>
+ 
+ $.get("/allChangeLists" , function(list){
+    var value = $('#select_Version :selected').val();
+      
+      if(Object.keys(list).length==0)
+           $("#AddVersionButton").css("display", "block");
+      else{
+            $("#AddVersionButton").css("display", "none");
+            $.each(list, function(index, changeL)
+        {
+            $.get("/nomVersionCorrespondant/"+changeL.id , function(versionName){
+                    
+                $("#table2changeList").append($("<tr id='ligne"+changeL.id+"'> <td>"+changeL.id+"</td> <td>"+changeL.user+"</td><td>"+changeL.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeL.id+")'>Create Version</button></td> <td><button onclick='testRunButton("+changeL.id+")'>RUN TEST</button></td></tr>"));
+                
+            });
+        
+        });
+      }
+    });
+    
+function appeler()
+{
+     var table= document.getElementById("table2changeList");
+                while(table.rows.length > 0) {
+                                        table.deleteRow(0);
+                                              }
+    $("#table2changeList").append($("<tr id='header2changeList'><th align ='left'>ChangeList</th><th align ='left'>User</th><th align ='left'>Description</th><th align ='left'>Version</th><th align ='left'>Create Version</th><th align ='left'>Run Test</th></tr>"));
+
+    $.get("/allChangeLists" , function(list){
+    var value = $('#select_Version :selected').val();
+      
+      if(Object.keys(list).length==0)
+            $("#AddVersionButton").css("display", "block");
+      else{
+            $("#AddVersionButton").css("display", "none");
+           if(value=="all")
+           {
+            $.each(list, function(index, changeL)
+        { 
+            $.get("/nomVersionCorrespondant/"+changeL.id , function(versionName){
+                    
+                $("#table2changeList").append($("<tr id='ligne"+changeL.id+"'> <td>"+changeL.id+"</td> <td>"+changeL.user+"</td><td>"+changeL.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeL.id+")'>Create Version</button></td> <td><button onclick='testRunButton("+changeL.id+")'>RUN TEST</button></td></tr>"));
+                
+            });
+                });
+      }
+      else
+      {
+          $("#header2changeList").append($("<th align ='left' id='baseHead'></th>"));
+          
+        $.get("/changeListById/"+value , function(listChangeListParticulier){
+        if(listChangeListParticulier.length==1){
+        $.each(listChangeListParticulier, function(index1,changeListParticulier){
+            $.get("/nomVersionCorrespondant/"+changeListParticulier.id , function(versionName){
+             if(index1==0){
+                 
+             $("#table2changeList").append($("<tr id='ligne"+changeListParticulier.id+"'> <td>"+changeListParticulier.id+"</td> <td>"+changeListParticulier.user+"</td><td>"+changeListParticulier.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeListParticulier.id+")'>Create Version</button></td> <td><button onclick='testRunButton("+changeListParticulier.id+")'>RUN TEST</button></td><td id='base"+changeListParticulier.id+"'>Base and Head"+"</td></tr>"));
+             
+                 
+             }
+             
+             else{
+                if(index1 == (listChangeListParticulier.length -1))
+             {
+              $("#table2changeList").append($("<tr id='ligne"+changeListParticulier.id+"'> <td>"+changeListParticulier.id+"</td> <td>"+changeListParticulier.user+"</td><td>"+changeListParticulier.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeListParticulier.id+")'>Create Version</button></td> <td><button onclick='testRunButton("+changeListParticulier.id+")'>RUN TEST</button></td><td id='head"+changeListParticulier.id+"'>Head"+"</td></tr>"));
+             }
+                else{
+                    
+             $("#table2changeList").append($("<tr id='ligne"+changeListParticulier.id+"'> <td>"+changeListParticulier.id+"</td> <td>"+changeListParticulier.user+"</td><td>"+changeListParticulier.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeListParticulier.id+")'>Create Version</button></td> <td><button onclick=testRunButton("+changeListParticulier.id+")'>RUN TEST</button></td></tr>"));
+                }
+             
+                 
+             }
+        });
+        });    
+        }
+        else
+        {
+            
+        $.each(listChangeListParticulier, function(index1,changeListParticulier){
+            $.get("/nomVersionCorrespondant/"+changeListParticulier.id , function(versionName){
+
+             if(index1==0){
+             $("#table2changeList").append($("<tr id='ligne"+changeListParticulier.id+"'> <td>"+changeListParticulier.id+"</td> <td>"+changeListParticulier.user+"</td><td>"+changeListParticulier.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeListParticulier.id+")'>Create Version</button></td> <td><button onclick='testRunButton("+changeListParticulier.id+")'>RUN TEST</button></td><td id='base"+changeListParticulier.id+"'>Base"+"</td></tr>"));
+             }
+             else{
+                if(index1 == (listChangeListParticulier.length -1))
+             {
+              $("#table2changeList").append($("<tr id='ligne"+changeListParticulier.id+"'> <td>"+changeListParticulier.id+"</td> <td>"+changeListParticulier.user+"</td><td>"+changeListParticulier.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeListParticulier.id+")'>Create Version</button></td> <td><button onclick='testRunButton("+changeListParticulier.id+")'>RUN TEST</button></td><td id='head"+changeListParticulier.id+"'>Head"+"</td></tr>"));
+             }
+                else{
+                    
+                       $("#table2changeList").append($("<tr id='ligne"+changeListParticulier.id+"'> <td>"+changeListParticulier.id+"</td> <td>"+changeListParticulier.user+"</td><td>"+changeListParticulier.description+"</td><td>"+versionName+"</td> <td><button onclick='forkVersion("+changeListParticulier.id+")'>Create Version</button></td> <td><button onclick='testRunButton("+changeListParticulier.id+")'>RUN TEST</button></td></tr>"))
+                }
+             }
+            });
+        });    
+        }
+        });    
+          
+      }
+      
+      }
+    });
+}
+function forkVersion(id)
+{
+        var versionPrompt = prompt("Please enter version name", "version name");
+        post("/version3/",id,versionPrompt);
+    
+}
+</script>
+    
+    <div id='AddVersionButton'>
+        <form method="POST" action="@routes.Application.addVersion()">
+            <input type="text" name="name"/>
+            <button onclick="hideAddVersion()">Add Version</button>
+        </form>
+    </div>
+    
+<select id="select_Version" onchange='versionSelected()'>
+    <option value='default' disabled selected>Choose a Version</option>
+</select>
+
+    <table id="table2changeList" width="70%">
+<tr id="header2changeList">
+<th align ='left'>ChangeList</th>
+<th align ='left'>User</th>
+<th align ='left'>Description</th>
+<th align ='left'>Version</th>
+<th align ='left'>Create Version</th>
+<th align ='left'>RunTest</th>
+</tr>    
+</table> 
+    
+  <script>
+        function hideAddVersion(){
+             $("#table2changeList").append($("<tr id='testersd'> <td> changel</td> <td>user1</td> <td>descr</td> <td>version1</td> <td><button>Create Version</button></td> <td><button>RUNTEST</button></td></tr>"));
+        }
+   </script>
+   
+   <div id="dialogUi"></div> 
+   
+</div>
+<div id="compareDiv" style="display:none">
+<form method="GET"  id="compare_list" action="">
+<select id="select_list" onchange='listSelected()' >
+    <option disabled selected>Choose a TestDef</option>
+</select>
+<button id="comparer" >Compare </button>
+
+</form>
+
+</div>
+</div>
+<div id = "runTest">
+    <div id="entete">
+			<button type="button" id="close"  onclick="hideDialog2()">x</button>
+			<h1 id="titre">Run Test</h1>
+		</div>
+    <div class = 'radio'>
+        
+    </div>
+        <button value = 'button' id="aDialog1" onclick = 'runtestfunc()' >Run Test</button>
+    
+    
+</div>
+
+<div id="dialogUi">
+		<div id="entete">
+			<button type="button" id="close"  onclick="hideDialog()">x</button>
+			<h1 id="titre">Apply for a job</h1>
+		</div>
+		
+		<div id="contenuDialog">
+			<p id="pDialog">Sign in to apply for a job</p><br><br>
+			<a href="signIn.php" id="aDialog">Sign in</a>
+		</div>
+	
+	</div>
+
+
+<script>
+
+function hideDialog2(){
+            $("#runTest").css("display","none");
+        }
+
+
+function getCheckedRadio(radio_group) {
+    for (var i = 0; i < radio_group.length; i++) {
+        var button = radio_group[i];
+        if (button.checked) {
+            return button;
+        }
+    }
+    return undefined;
+}
+var idTest;
+    function runtestfunc(){
+       var radioID = (getCheckedRadio(document.getElementsByName('optradio'))).id;
+        get2("/testRunDexide/",radioID,idTest);
+        
+    }
+    
+    function get2(path,argument1,argument2)
+    {
+        var form = $('<form method="post"  action="'+path+argument1+"/"+argument2+'"></form>');
+    $(document.body).append(form);
+    form.submit();
+    }
+
+    function testRunButton(idTestRun){
+        $("#runTest").css("display","block");
+        
+        $( ".radio" ).empty();
+        idTest=idTestRun;
+        $.get("/testRun/"+idTestRun , function(list){
+        
+        //var a = get("/testRun/",idTestRun);
+        $.each(list, function(index1,testDef){
+            $(".radio").append($("<label><input type = 'radio' id = '" + testDef.idTestDef +"' name='optradio' >"+ testDef.name +"</label><br> "));
+        });
+        });
+        
+        
+    }
+    
+//     $(function(){
+//   $('input[type="radio"]').click(function(){
+//     if ($(this).is(':checked'))
+//     {
+//         var id_radio=getIDRadio();
+        
+//      $("#form_etudier").attr("action", "/testRunDexide/"+id_radio+"/"+idTestRun);
+     
+//     }
+//   });
+// });
+    
+    function getIDRadio()
+{
+    var checkedButton = getCheckedRadio(document.getElementsByName('optradio'));
+   return checkedButton.id;
+}
+
+
+
+</script>
+    }

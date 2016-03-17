@@ -1,0 +1,65 @@
+@()
+
+    
+@main("Welcome to Play") {
+<link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")">
+   
+ <script>
+
+    function post(path, parameter1,parameter2) {
+    var form = $('<form method="post"  action="'+path+parameter1+'/'+parameter2+'"></form>');
+    $(document.body).append(form);
+    form.submit();
+    
+ }
+ 
+   function get(path, parameters) {
+    var form = $('<form method="get"  action="'+path+parameters+'"></form>');
+    $(document.body).append(form);
+    form.submit();
+ }
+ </script>
+ <script>
+ $.get("/allChangeLists" , function(list){
+      if(Object.keys(list).length==0)
+            $("#AddVersionButton").css("display", "block");
+      else{
+            $("#AddVersionButton").css("display", "none");
+            $.each(list, function(index, changeL)
+        {
+        //    $("#table2changeList").append($("<tr id='ligne"+changeL.id+"'> <td>"+changeL.id+"</td> <td>user"+index+"</td><td>"+changeL.description+"</td><td>"+changeL.versionId+"</td> <td><button onclick='post(/version3/,"+changeL.id+")'>FORK</button></td> <td><button onclick='get(/testRun/,"+changeL.id+")'>RUN TEST</button></td></tr>"));
+        
+                $("#table2changeList").append($("<tr id='ligne"+changeL.id+"'> <td>"+changeL.id+"</td> <td>user"+index+"</td><td>"+changeL.description+"</td><td>"+changeL.versionId+"</td> <td><button onclick='forkVersion("+changeL.id+")'>FORK</button></td> <td><button onclick='get(/testRun/,"+changeL.id+")'>RUN TEST</button></td></tr>"));
+        });
+      }
+    });
+
+function forkVersion(id)
+{
+        var versionPrompt = prompt("Please enter version name", "version name");
+
+        post("/version3/",id,versionPrompt);
+    
+}
+</script>
+    
+    <div id='AddVersionButton'>
+        <form method="POST" action="@routes.Application.addVersion()">
+            <input type="text" name="name"/>
+            <button onclick="hideAddVersion()">Add Version</button>
+        </form>
+    </div>
+    
+    <table id="table2changeList" width="50%">
+<tr id="header2changeList">
+<th>ChangeList</th>
+<th>User</th>
+<th>Description</th>
+<th>Version</th>
+<th>Fork Version</th>
+<th>RunTest</th>
+</tr>    
+</table>
+
+    
+}

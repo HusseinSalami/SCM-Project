@@ -1,0 +1,96 @@
+@()
+@main("Welcome to Play") {
+
+<script src="@routes.Assets.at("javascripts/jquery-1.11.3.min.js")"></script>
+<link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.css")">
+        
+<script>
+    
+    function userSelected(){
+      var value = $('#TypeUser :selected').text();
+        $("#signup").attr("action","/signUp/"+value);
+    }
+
+window.onload = function(){ 
+  
+    document.getElementById('signInTab').onclick = function() {
+    document.getElementById('SignInDiv').style.display = 'block';
+    document.getElementById('SignUpDiv').style.display = 'none';
+    document.getElementById('signUpTab').className='';
+    document.getElementById('signInTab').className='active';
+    }
+document.getElementById('signUpTab').onclick = function() {
+    document.getElementById('SignUpDiv').style.display = 'block';
+    document.getElementById('SignInDiv').style.display = 'none';
+    document.getElementById('signInTab').className='';
+    document.getElementById('signUpTab').className='active';
+}
+};
+    
+    
+</script>
+
+<div class="container">
+<ul class="nav nav-list">
+  <li><a class="active" href="#" id="signInTab" > Sign In</a></li>
+  <li><a href="#" id="signUpTab">Sign up</a></li>
+</ul>
+<br>
+<div class="tab-content">
+<div id="SignInDiv">
+
+<form method="POST"  id="signin" action="/login">
+ <div>
+   <input name="email" class="form-control" type="email" id="email" placeholder="Email">
+ </div>
+ <div>
+   <input name="password" class="form-control" type="password" id="password" placeholder="Password">
+ </div>
+<br><br>
+  <button class="btn" float="right">Log in</button>
+</form>
+</div>
+
+
+<div id="SignUpDiv" style="display:none">
+
+<form method="POST"  id="signup" onsubmit="return validateFormSignUp()" action="">
+ <div>
+   <input name="email" class="form-control" type="email" id="email" placeholder="Email">
+   </div>
+ <div>
+  <input name="password" class="form-control" type="password" id="password" placeholder="Password">
+ </div>
+ <div>
+     <label for="typeUser">As developer or Testeur</label>
+     <select id="TypeUser" onchange='userSelected()'>
+         <option value='choose' disabled selected>choose one</option>
+         <option value='testeur'>Testeur</option>
+         <option value='developpeur'>Developpeur</option>
+     </select>
+ </div>
+<br>
+ <button class="btn" float="right">Sign up!</button>
+
+</form>
+</div>
+</div>
+</div>
+<script>
+    function validateFormSignUp() {
+        var e = document.getElementById("TypeUser");
+      
+        var value=e.options[e.selectedIndex].value;
+    if(value == "choose")
+    {
+        alert("choose a user");
+        
+        return false;
+    }
+    else
+    return true;
+  
+}
+</script>
+}
+

@@ -1,0 +1,44 @@
+@(list_test :List[TestDef],id :String)
+@main("Welcome to Play") {
+<script>
+    
+    function getCheckedRadio(radio_group) {
+    for (var i = 0; i < radio_group.length; i++) {
+        var button = radio_group[i];
+        if (button.checked) {
+            return button;
+        }
+    }
+    return undefined;
+}
+function getIDRadio()
+{
+    var checkedButton = getCheckedRadio(document.getElementsByName('optradio'));
+   return checkedButton.id;
+}
+
+$(function(){
+  $('input[type="radio"]').click(function(){
+    if ($(this).is(':checked'))
+    {
+        var id_radio=getIDRadio();
+        
+     $("#form_etudier").attr("action", "/testRunDexide/"+id_radio+"/"+@id);
+     
+    }
+  });
+});
+</script>
+
+<h1>Choose a test def for this test run  +@id</h1>
+<form role="form">
+@list_test.map{test_element=>
+    <div class="radio">
+      <label><input type="radio"  id =@test_element.idTestDef name="optradio">@test_element.name</label>
+    </div>
+}    
+</form>    
+<form method="POST" action='' id='form_etudier'>
+         <button value="button" class="test_clicked">Create Test</button>
+</form>
+    }

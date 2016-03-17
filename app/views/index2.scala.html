@@ -1,0 +1,193 @@
+@()
+
+    
+@main("Welcome to Play") {
+
+<script type='text/javascript' src='@routes.Assets.at("javascripts/index3.js")'></script>
+<link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")">
+<script>
+var yourarray = [];
+function myFunction(){
+yourarray = [];
+$('input.metric:checkbox:checked').each(function () {
+    yourarray.push($(this).val());
+});
+
+var text ="";
+
+for( var i=0;i<yourarray.length -1;++i){
+    text +=  yourarray[i] + ",";
+}
+if(yourarray.length != 0)
+{
+    text += yourarray[yourarray.length - 1];}
+    $("#createTest").attr("action","/test/"+ text);
+}
+
+
+window.onload = function(){ 
+  
+    document.getElementById('upValTab').onclick = function() {
+        document.getElementById('metricDiv').style.display = 'none';
+        document.getElementById('postDiv').style.display = 'block';
+        document.getElementById('testDiv').style.display = 'none';
+        document.getElementById('upValTab').className='active';
+        document.getElementById('crTesTab').className='';
+        document.getElementById('crMetTab').className='';
+    }
+    document.getElementById('crTesTab').onclick = function() {
+        document.getElementById('metricDiv').style.display = 'none';
+        document.getElementById('postDiv').style.display = 'none';
+        document.getElementById('testDiv').style.display = 'block';
+        document.getElementById('upValTab').className='';
+        document.getElementById('crTesTab').className='active';
+        document.getElementById('crMetTab').className='';
+    }
+    document.getElementById('crMetTab').onclick = function() {
+        document.getElementById('metricDiv').style.display = 'block';
+        document.getElementById('postDiv').style.display = 'none';
+        document.getElementById('testDiv').style.display = 'none';
+        document.getElementById('upValTab').className='';
+        document.getElementById('crTesTab').className='';
+        document.getElementById('crMetTab').className='active';
+    }
+};
+</script>
+
+<script>
+  $.get ("/testeurBesoinTestRun", function(testRuns){ 
+    $.each(testRuns,function(index1, testRun){
+        $("#testRun").append($("<li id='testRun"+testRun.idTestRun+"'>"+testRun.idTestRun+"<ul id='metri"+index1+"'>"));
+       });
+    });
+  $.get("/testeurBesoinMetricDef", function(metricDefs){
+        $.each(metricDefs,function(index2, metricDef){
+            $.each(metricDef,function(index3, metricdefUnitte){
+                $("#metri"+index2).append($("<li id='unite"+metricdefUnitte.idMetricDef+"'><br/>").text(metricdefUnitte.name)); 
+                $("#metri"+index2).append($("<input type='text' name='"+metricdefUnitte.idMetricDef+index2+"'/><br/>"));
+            });
+        });
+        });
+    
+</script>
+
+<div class='container' style="width:500px;height:400px">
+<ul class="nav nav-list">
+    <li><a class="active" href="#" id="crMetTab">Metrics</a></li>
+    <li><a href="#" id="crTesTab">Test</a></li>
+    <li><a href="#" id="upValTab" >Update Values</a></li>
+    <li style="float:right !important">
+    <form method="GET" id="logout" action='/logout'>
+    <button class="btn">LogOut</button>
+    </form>
+    </li>
+</ul>
+<br/>
+<br/>
+
+<div id="postDiv" style="display:none">
+<script>
+        $.get ("/testeurBesoinTestRun", function(testRuns){ 
+        $.get("/testDefUpdateTab", function(testDefCorrespondant){
+        $.get("/testeurBesoinMetricDef", function(metricDefs){
+        $.each(testRuns,function(index1, testRun){
+        $.each(testDefCorrespondant, function(index2,testDefUnite){
+                
+        $("#UpdateTable").append($("<tr id='LigneTestRun"+testRun.idTestRun+"0'></tr>"));
+            if(index2==index1){
+                
+                $.each(metricDefs,function(index3, metricDef){
+                    if(index1==index3){
+                    
+                $("#LigneTestRun"+testRun.idTestRun+"0").append($("<td id='testRun"+testRun.idTestRun+"0'>"+testRun.idChangeList+"</td><td id='testDefDescription"+testDefUnite.idTestDef+"0'>"+testDefUnite.description+"</td><td id='testDefName"+testDefUnite.idTetDef+"0'>"+testDefUnite.name+"</td>"));             
+                $.each(metricDef, function(index4, metricdefUnitte){
+               
+                if(index4==0){
+                $("#LigneTestRun"+testRun.idTestRun+"0").append($("<td id='unite"+metricdefUnitte.idMetricDef+"0'>"+metricdefUnitte.name+"</td><td><input type='text' value='' name='"+metricdefUnitte.idMetricDef+testRun.idTestRun+"'/></td>")) ;
+                }
+               
+                else
+                {
+                 $("#UpdateTable").append($("<tr id='LigneTestRun"+testRun.idTestRun+index4+"'><td id='testRun"+testRun.idTestRun+index4+"'></td><td id='testDefDescription"+testDefUnite.idTestDef+index3+"'></td><td id='testDefName"+testDefUnite.idTestDef+index4+"'></td><td id='unite"+metricdefUnitte.idMetricDef+index4+"'>"+metricdefUnitte.name+"</td><td><input type='text' value='' name='"+metricdefUnitte.idMetricDef+testRun.idTestRun+"'/></td></tr>"))  ;  
+                }
+                });
+                                                 }
+        });
+        }
+                                    });
+                                                                 });
+        });
+        
+      });
+    });
+</script>
+<form method="POST" action="@routes.Application.addMetricValue()">
+        
+    <table id="UpdateTable">
+        <tr><th>ChangeList</th><th>Description</th><th>TestDef</th><th>Metric Name</th><th></th></tr>
+    </table>
+
+<button class="btn">Update Values</button>
+
+</form>
+</div>
+<div id="metricDiv" >
+
+
+
+<form method="POST" onsubmit="return validateCreateMetricForm()" action="@routes.Application.createmetric()">
+
+    <label style="float:left;width:180px">Name</label>              <input type="text" name="name" value=" "/><br><br/>
+    <label style="float:left;width:180px">Description</label>       <input type="text" name="description" value=" "/><br><br/>
+    <label style="float:left;width:180px">Tolerance</label>         <input type="text" name="tolerance" value=" "/><br><br/>
+    <br/>
+    <button class="btn">Create metric</button>
+</form>
+</div>
+
+
+<div id="testDiv" style="display:none">
+<form method="POST" id = "createTest" onsubmit="return validateCreateTestForm() " action="">
+    <label style="float:left;width:180px">Name</label>              <input type="text" id="nameTest" name="name" value=" "/><br><br>
+    <label style="float:left;width:180px">Description</label>       <input type="text" id="descriptionTest" name="description" value=" "/><br><br>
+    <label style="float:left;width:180px">Nom des metric:</label><br>    <div id="listMetric"></div>
+                        <ul id="metricSelected"></ul>
+  
+    <button class="btn">Create Test</button>
+</form>
+</div>
+
+</div>
+<script>
+    function validateCreateMetricForm()
+    {
+      var name=  $("input[type='text'][name='name']").val();
+        var description = $("input[type='text'][name='description']").val();
+        var tolerance = $("input[type='text'][name='tolerance']").val();
+       if(name==" " || description==" " || tolerance==" ")
+      {
+          
+          alert("Please fill empty blank");
+          return false;
+      }
+      return true;
+    }
+    
+    function validateCreateTestForm()
+    {
+   //    var name=  $("input[type='text'][name='name']").val();
+     //   var description = $("input[type='text'][name='description']").val();
+       var name=$("#nameTest").val();
+       var description=$("#descriptionTest").val();
+       if(name==" " || description==" " )
+      {
+          
+          alert("Please fill empty blank");
+          return false;
+      }
+      return true;  
+        
+        
+    }
+</script>
+}       

@@ -1,0 +1,105 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+# Home page
+
+GET     /index                           controllers.Application.index()
+
+GET    /login                 controllers.Application.getLoginPage()
+
+GET  /index2             controllers.Application.getIndex2Page()
+
+POST /deleteAllRows  controllers.Application.deleteAllRows()
+POST    /version                     controllers.Application.addVersion()
+
+POST    /changeList                     controllers.Application.addChangeList()
+
+POST    /changeList2/:id/:description                     controllers.Application.addChangeList2(id:String,description:String)
+
+POST   /version3/:id/:versionName                   controllers.Application.addVersion3(id:String,versionName:String)
+
+POST    /metric                     controllers.Application.createmetric()
+
+POST    /test/:array                     controllers.Application.createTest(array: String)
+
+POST     /testRunDexide/:id_test_def/:id_changeList          controllers.Application.getTestRunDexideCreate(id_test_def:String,id_changeList:String)
+
+POST    /metricTesteur                       controllers.Application.addMetricValue()
+
+
+POST   /signUp/:type                                controllers.Application.signUp(type:String)
+
+GET   /                                 controllers.Application.getSignUp()
+
+POST /login                            controllers.Application.login()
+
+GET /users             controllers.Application.getUsers()
+
+GET /getindex2            controllers.Application.index2()
+
+GET /logout             controllers.Application.logout()
+
+#
+GET     /testRun/:id                          controllers.Application.getTestRunCreate(id:String)
+
+GET     /testRunAll                          controllers.Application.getTestRunAll()
+
+GET     /versions                    controllers.Application.getVersions
+
+GET     /changeLists                    controllers.Application.getChangeLists
+
+GET     /metric                          controllers.Application.getmetric()
+
+GET     /test                          controllers.Application.getTest()
+
+GET     /testmetrique                   controllers.Application.getTestmetrique()
+
+GET     /testeurPage                      controllers.Application.getTesteurWork()
+
+GET    /testeurBesoinTestRun                   controllers.Application.getTesteurNeedsTest()
+
+GET    /testeurBesoinMetricDef                   controllers.Application.getTesteurNeedsMetric()
+
+GET     /metricValues                          controllers.Application.getMetricValue()
+
+GET   /compareChangeListPage/:value                        controllers.Application.getComparePage(value:String)
+
+GET  /listeTestDef                                      controllers.Application.getTestDef()
+
+GET  /changeListVersionTestDef/:nameTestDef/:version         controllers.Application.getChangeListVersionTestDef(nameTestDef: String,version:String)
+
+GET /comparerChangeList/:testdef/:reference/:tester       controllers.Application.getComparerChangeList(testdef:String,reference:String,tester:String)
+
+GET /getMetricsValue/:reference/:testdef                                 controllers.Application.getMetricValueTest(reference:String , testdef:String )
+
+GET /versionIsValidate/:testName/:versionId                                   controllers.Application.getValidateVersion(testName:String,versionId:String)
+
+GET /validateVersion/:testName/:versionId                               controllers.Application.validateVersion(testName:String,versionId:String)
+
+GET /metricDefNom/:nameTestDef                                  controllers.Application.getMetricDefNom(nameTestDef:String)
+
+GET /metricValueTemplate/:testDef/:versionId                              controllers.Application.getMetricValuesTemplateValidate(testDef :String,versionId:String)
+
+GET /headBaseId/:versionId                    controllers.Application.getHeadBaseId( versionId:String)
+
+GET /metricValueCompareTemplate/:nameTestDef/:reference/:comp                controllers.Application.getMetricValuesTemplateCompare(nameTestDef:String,reference:String,comp:String)
+
+GET /comparerChangeListUniqueMetrique/:metricId/:reference/:tester        controllers.Application.getComparerChangeListUnique(metricId:String,reference:String,tester:String)
+
+GET /metricValueUniqueCompareTemplate/:metricChoixId/:reference/:comp                 controllers.Application.getmetricValueTemplateCompare(metricChoixId:String,reference:String,comp:String)
+
+GET /changeListById/:versionId                  controllers.Application.getChangeListById(versionId:String)
+
+GET /index2                                    controllers.Application.getIndex2()
+
+GET  /testDefUpdateTab            controllers.Application.getTestDefOrder()
+
+GET  /couleurMetriqueValidate/:testName/:versionId               controllers.Application.getCouleurMetriqueValidate(testName:String,versionId:String)
+
+GET /nomVersionCorrespondant/:changeList          controllers.Application.getNomVersionCorrespondant(changeList :String)
+
+GET  /couleurMetriqueComparer/:testdef/:reference/:tester    controllers.Application.getCouleurMetriqueComparer(testdef:String ,reference:String ,tester:String)
+
+GET /allChangeLists            controllers.Application.getAllChangeLists()
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
